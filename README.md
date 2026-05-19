@@ -129,8 +129,6 @@ If no config file is provided explicitly, the checker looks for:
 
 ## GitHub Action Usage
 
-
-
 To use the action:
 
 ```yaml
@@ -180,7 +178,6 @@ jobs:
           config-file: link-checker.config.json
 ```
 
-
 ## Main Inputs
 
 The action and CLI share the same core options.
@@ -209,11 +206,11 @@ The checker uses `HEAD` first and falls back to `GET` when common server behavio
 By default, authentication and protection-style responses such as `401`, `403`, `429`, and `5xx` are warnings rather than hard broken-link errors. If a domain is known to block automated checks, prefer one of these options:
 
 ```bash
-pnpm run dev:cli scan --paths example.md --allow-domain anydesk.com --allow-domain canva.com
+pnpm run dev:cli scan --paths README.md --allow-domain anydesk.com --allow-domain canva.com
 ```
 
 ```bash
-pnpm run dev:cli scan --paths example.md --allow-status-code 403 --allow-status-code 503
+pnpm run dev:cli scan --paths README.md --allow-status-code 403 --allow-status-code 503
 ```
 
 Use `--deny-domain` or `--deny-status-code` for links where those same responses should fail the run.
@@ -255,24 +252,6 @@ Logging uses `pino`.
 - use `--detailed` or `--detail detailed` in the CLI for richer issue payloads without debug logs
 - common sensitive fields such as `authorization`, `cookie`, `token`, `secret`, and `password` are redacted by default
 
-## Release and CI
+## Versioning
 
-- `.github/workflows/ci.yml` runs workflow linting, project checks, and the smoke test
-- `.github/workflows/release-please.yml` manages release PRs and GitHub releases
-- major tags such as `v1` are updated to point at the latest matching major release
-
-## Conventional Commits
-
-Release automation uses `release-please`, so commit messages should follow Conventional Commits.
-
-Examples:
-
-```text
-feat: add markdown summary output mode
-fix: handle config cwd relative to config file
-docs: expand README usage examples
-test: add action adapter coverage
-chore: update release workflow permissions
-```
-
-Use `feat` for user-visible features, `fix` for behavior corrections, `docs` for documentation changes, `test` for test-only work, and `chore` for maintenance tasks.
+Major version tags such as `v1` are updated to point at the latest matching major release. Use `uses: Trifall/link-checker@v1` to automatically receive compatible updates.

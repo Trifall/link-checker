@@ -1,7 +1,7 @@
 {
 	"name": "link-checker",
 	"version": "0.1.0",
-	"private": true,
+	"private": false,
 	"description": "GitHub Action and CLI for checking markdown links.",
 	"bin": {
 		"link-checker": "./dist/cli.mjs"
