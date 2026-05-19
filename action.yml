@@ -1,0 +1,75 @@
+name: Link Checker
+description: Scan markdown files and report external links that need attention.
+
+inputs:
+  config-file:
+    description: Optional path to a JSON or JSONC config file.
+    required: false
+  allow-domains:
+    description: Multiline list of domains that may downgrade failures to warnings.
+    required: false
+  allow-status-codes:
+    description: Multiline list of HTTP status codes to treat as OK.
+    required: false
+  paths:
+    description: Multiline glob list of files to scan.
+    required: false
+  exclude:
+    description: Multiline glob list of files to exclude.
+    required: false
+  deny-domains:
+    description: Multiline list of domains that upgrade warnings to errors.
+    required: false
+  deny-status-codes:
+    description: Multiline list of HTTP status codes to force as errors.
+    required: false
+  timeout-seconds:
+    description: Per-request timeout in seconds.
+    required: false
+  concurrency:
+    description: Maximum number of concurrent URL checks.
+    required: false
+  retries:
+    description: Number of retry attempts for retryable failures.
+    required: false
+  retry-base-delay-ms:
+    description: Base retry delay in milliseconds.
+    required: false
+  retry-max-delay-ms:
+    description: Maximum retry delay in milliseconds.
+    required: false
+  respect-gitignore:
+    description: Whether to respect .gitignore rules while discovering files.
+    required: false
+  fail-on:
+    description: Failure mode. One of error, warning, or mixed.
+    required: false
+  ignore-url-patterns:
+    description: Multiline list of URL patterns to ignore.
+    required: false
+  ignore-domains:
+    description: Multiline list of domains to ignore.
+    required: false
+  user-agent:
+    description: Override the default user agent.
+    required: false
+  output-json:
+    description: Optional path for a JSON report file.
+    required: false
+  verbose:
+    description: Emit verbose logging.
+    required: false
+
+outputs:
+  checked-count:
+    description: Number of links that were checked.
+  broken-count:
+    description: Number of broken links found.
+  warning-count:
+    description: Number of warnings found.
+  report-path:
+    description: Path to the generated JSON report, if any.
+
+runs:
+  using: node24
+  main: dist/action.mjs

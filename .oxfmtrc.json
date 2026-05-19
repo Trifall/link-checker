@@ -1,0 +1,10 @@
+{
+	"$schema": "./node_modules/oxfmt/configuration_schema.json",
+	"endOfLine": "lf",
+	"ignorePatterns": ["dist/**/*"],
+	"semi": true,
+	"singleQuote": true,
+	"sortImports": true,
+	"trailingComma": "all",
+	"useTabs": true
+}

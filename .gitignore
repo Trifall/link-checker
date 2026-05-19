@@ -1,0 +1,17 @@
+node_modules
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+
+# Editor
+.vscode/settings.json

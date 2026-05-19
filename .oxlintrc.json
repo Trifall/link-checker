@@ -1,0 +1,8 @@
+{
+	"ignorePatterns": ["dist/**/*"],
+	"rules": {
+		"@typescript-eslint/consistent-type-imports": "off",
+		"no-useless-escape": "off",
+		"@typescript-eslint/ban-ts-comment": "off"
+	}
+}
