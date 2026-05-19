@@ -9811,6 +9811,40 @@ const LOGGER_REDACT_PATHS = [
 	"err.config.headers.cookie",
 	"err.config.headers[\"set-cookie\"]"
 ];
+const REDACTED_QUERY_PARAMS = new Set([
+	"access_token",
+	"accesstoken",
+	"api_key",
+	"apikey",
+	"auth",
+	"authorization",
+	"client_secret",
+	"clientsecret",
+	"credential",
+	"key",
+	"passwd",
+	"password",
+	"private_key",
+	"privatekey",
+	"refresh_token",
+	"refreshtoken",
+	"secret",
+	"signature",
+	"token"
+]);
+function sanitizeUrl(url) {
+	try {
+		const parsed = new URL(url);
+		let modified = false;
+		for (const key of [...parsed.searchParams.keys()]) if (REDACTED_QUERY_PARAMS.has(key.toLowerCase())) {
+			parsed.searchParams.set(key, "[Redacted]");
+			modified = true;
+		}
+		return modified ? parsed.toString() : url;
+	} catch {
+		return url;
+	}
+}
 let logger;
 let loggerSignature;
 function configureLogger(options) {
@@ -9915,8 +9949,8 @@ function formatCheck(check) {
 	const location = occurrence ? formatOccurrence(occurrence) : "unknown location";
 	const method = check.method ? `${check.method} ` : "";
 	const statusCode = check.statusCode ? ` ${check.statusCode}` : "";
-	const redirect = check.finalUrl ? ` -> ${check.finalUrl}` : "";
-	return `${check.status.toUpperCase()}: ${method}${check.url}${statusCode}${redirect} (${check.message}) at ${location}`;
+	const redirect = check.finalUrl ? ` -> ${sanitizeUrl(check.finalUrl)}` : "";
+	return `${check.status.toUpperCase()}: ${method}${sanitizeUrl(check.url)}${statusCode}${redirect} (${check.message}) at ${location}`;
 }
 function buildMarkdownSummary(result) {
 	const lines = [
@@ -9945,13 +9979,36 @@ function shouldFailRun(config, checks) {
 	if (config.failOn === "error") return hasError;
 	return hasError;
 }
+function sanitizeConfig(config) {
+	return {
+		allowDomains: config.allowDomains,
+		allowStatusCodes: config.allowStatusCodes,
+		concurrency: config.concurrency,
+		denyDomains: config.denyDomains,
+		denyStatusCodes: config.denyStatusCodes,
+		exclude: config.exclude,
+		failOn: config.failOn,
+		ignoreDomains: config.ignoreDomains,
+		ignoreUrlPatterns: config.ignoreUrlPatterns,
+		outputDetail: config.outputDetail,
+		outputJson: config.outputJson,
+		paths: config.paths,
+		respectGitignore: config.respectGitignore,
+		retryBaseDelayMs: config.retryBaseDelayMs,
+		retryMaxDelayMs: config.retryMaxDelayMs,
+		retries: config.retries,
+		timeoutSeconds: config.timeoutSeconds,
+		userAgent: config.userAgent,
+		verbose: config.verbose
+	};
+}
 async function writeJsonReport(config, result) {
 	if (!config.outputJson) return;
 	const reportPath = path.resolve(config.cwd, config.outputJson);
 	await mkdir(path.dirname(reportPath), { recursive: true });
 	await writeFile(reportPath, JSON.stringify({
 		checks: result.checks,
-		config,
+		config: sanitizeConfig(config),
 		domainStats: result.domainStats,
 		errors: result.checks.filter((check) => check.status === "error"),
 		redirectedCount: result.redirectedCount,
@@ -10111,7 +10168,7 @@ function applyOutcomeRules(originalUrl, outcome, config) {
 	if (nextOutcome.status !== outcome.status || nextOutcome.message !== outcome.message) logger.debug({
 		nextStatus: nextOutcome.status,
 		originalStatus: outcome.status,
-		url: originalUrl
+		url: sanitizeUrl(originalUrl)
 	}, "Applied outcome policy overrides");
 	return nextOutcome;
 }
@@ -10260,7 +10317,7 @@ async function retryCheck(url, config) {
 			delayMs,
 			status: latestOutcome.status,
 			statusCode: latestOutcome.statusCode,
-			url
+			url: sanitizeUrl(url)
 		}, "Retrying link check");
 		await sleep(delayMs);
 	}
@@ -36388,7 +36445,14 @@ function isSupportedUrl(value) {
 function matchesUrlPattern(url, pattern) {
 	const trimmedPattern = pattern.trim();
 	if (!trimmedPattern) return false;
-	if (trimmedPattern.startsWith("regex:")) return new RegExp(trimmedPattern.slice(6)).test(url);
+	if (trimmedPattern.startsWith("regex:")) {
+		const rawPattern = trimmedPattern.slice(6).replace(/^\/(.+)\/([gimsuyd]*)$/, "$1");
+		try {
+			return new RegExp(rawPattern).test(url);
+		} catch {
+			return false;
+		}
+	}
 	if (!trimmedPattern.includes("*")) return url === trimmedPattern;
 	const escapedPattern = escapeRegex(trimmedPattern).replaceAll("*", ".*");
 	return new RegExp(`^${escapedPattern}$`).test(url);
@@ -36479,4 +36543,4 @@ async function runLinkCheck(input = {}) {
 //#endregion
 export { formatCheck as a, createLogger as c, parseIntegerInput as d, parseOutputDetailInput as f, buildMarkdownSummary as i, getLogger as l, normalizeConfig as n, LOGGER_REDACT_PATHS as o, _enum as p, resolveConfig as r, configureLogger as s, runLinkCheck as t, parseBooleanInput as u };
 
-//# sourceMappingURL=run-link-check-Be7bi0w3.mjs.map
+//# sourceMappingURL=run-link-check-IUrTq83E.mjs.map

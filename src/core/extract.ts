@@ -158,7 +158,13 @@ function matchesUrlPattern(url: string, pattern: string): boolean {
 	}
 
 	if (trimmedPattern.startsWith('regex:')) {
-		return new RegExp(trimmedPattern.slice('regex:'.length)).test(url);
+		const rawPattern = trimmedPattern.slice('regex:'.length).replace(/^\/(.+)\/([gimsuyd]*)$/, '$1');
+
+		try {
+			return new RegExp(rawPattern).test(url);
+		} catch {
+			return false;
+		}
 	}
 
 	if (!trimmedPattern.includes('*')) {

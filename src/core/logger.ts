@@ -45,6 +45,47 @@ export const LOGGER_REDACT_PATHS: string[] = [
 	'err.config.headers["set-cookie"]',
 ];
 
+const REDACTED_QUERY_PARAMS = new Set([
+	'access_token',
+	'accesstoken',
+	'api_key',
+	'apikey',
+	'auth',
+	'authorization',
+	'client_secret',
+	'clientsecret',
+	'credential',
+	'key',
+	'passwd',
+	'password',
+	'private_key',
+	'privatekey',
+	'refresh_token',
+	'refreshtoken',
+	'secret',
+	'signature',
+	'token',
+]);
+
+export function sanitizeUrl(url: string): string {
+	try {
+		const parsed = new URL(url);
+
+		let modified = false;
+
+		for (const key of parsed.searchParams.keys()) {
+			if (REDACTED_QUERY_PARAMS.has(key.toLowerCase())) {
+				parsed.searchParams.set(key, '[Redacted]');
+				modified = true;
+			}
+		}
+
+		return modified ? parsed.toString() : url;
+	} catch {
+		return url;
+	}
+}
+
 let logger: pino.Logger | undefined;
 let loggerSignature: string | undefined;
 

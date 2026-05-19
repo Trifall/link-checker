@@ -1,4 +1,4 @@
-import { getLogger } from './logger.js';
+import { getLogger, sanitizeUrl } from './logger.js';
 import { formatCheck } from './report.js';
 import type {
 	CheckedLinkResult,
@@ -167,7 +167,11 @@ function applyOutcomeRules(
 
 	if (nextOutcome.status !== outcome.status || nextOutcome.message !== outcome.message) {
 		logger.debug(
-			{ nextStatus: nextOutcome.status, originalStatus: outcome.status, url: originalUrl },
+			{
+				nextStatus: nextOutcome.status,
+				originalStatus: outcome.status,
+				url: sanitizeUrl(originalUrl),
+			},
 			'Applied outcome policy overrides',
 		);
 	}
@@ -387,7 +391,7 @@ async function retryCheck(
 				delayMs,
 				status: latestOutcome.status,
 				statusCode: latestOutcome.statusCode,
-				url,
+				url: sanitizeUrl(url),
 			},
 			'Retrying link check',
 		);

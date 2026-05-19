@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { getLogger } from './logger.js';
+import { getLogger, sanitizeUrl } from './logger.js';
 import type {
 	CheckedLinkResult,
 	DomainStat,
@@ -77,9 +77,9 @@ export function formatCheck(check: CheckedLinkResult): string {
 	const location = occurrence ? formatOccurrence(occurrence) : 'unknown location';
 	const method = check.method ? `${check.method} ` : '';
 	const statusCode = check.statusCode ? ` ${check.statusCode}` : '';
-	const redirect = check.finalUrl ? ` -> ${check.finalUrl}` : '';
+	const redirect = check.finalUrl ? ` -> ${sanitizeUrl(check.finalUrl)}` : '';
 
-	return `${check.status.toUpperCase()}: ${method}${check.url}${statusCode}${redirect} (${check.message}) at ${location}`;
+	return `${check.status.toUpperCase()}: ${method}${sanitizeUrl(check.url)}${statusCode}${redirect} (${check.message}) at ${location}`;
 }
 
 export function buildMarkdownSummary(
@@ -141,6 +141,30 @@ export function shouldFailRun(config: RunConfig, checks: CheckedLinkResult[]): b
 	return hasError;
 }
 
+function sanitizeConfig(config: RunConfig): Record<string, unknown> {
+	return {
+		allowDomains: config.allowDomains,
+		allowStatusCodes: config.allowStatusCodes,
+		concurrency: config.concurrency,
+		denyDomains: config.denyDomains,
+		denyStatusCodes: config.denyStatusCodes,
+		exclude: config.exclude,
+		failOn: config.failOn,
+		ignoreDomains: config.ignoreDomains,
+		ignoreUrlPatterns: config.ignoreUrlPatterns,
+		outputDetail: config.outputDetail,
+		outputJson: config.outputJson,
+		paths: config.paths,
+		respectGitignore: config.respectGitignore,
+		retryBaseDelayMs: config.retryBaseDelayMs,
+		retryMaxDelayMs: config.retryMaxDelayMs,
+		retries: config.retries,
+		timeoutSeconds: config.timeoutSeconds,
+		userAgent: config.userAgent,
+		verbose: config.verbose,
+	};
+}
+
 export async function writeJsonReport(
 	config: RunConfig,
 	result: Pick<
@@ -169,7 +193,7 @@ export async function writeJsonReport(
 		JSON.stringify(
 			{
 				checks: result.checks,
-				config,
+				config: sanitizeConfig(config),
 				domainStats: result.domainStats,
 				errors: result.checks.filter((check) => check.status === 'error'),
 				redirectedCount: result.redirectedCount,
