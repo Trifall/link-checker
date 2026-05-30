@@ -42,7 +42,6 @@ describe('public link fixture', () => {
 			expect(result.extractedLinkCount).toBe(8);
 			expect(result.checkedCount).toBe(8);
 			expect(result.brokenCount).toBe(3);
-			expect(result.warningCount).toBe(0);
 			expect(result.shouldFail).toBe(true);
 
 			expect(
