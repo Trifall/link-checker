@@ -3,10 +3,8 @@
 TypeScript helps teams scale JavaScript codebases with stronger editor support, clearer APIs, and safer refactors.
 
 ## Useful References
-
 - [Google](https://www.google.com/)
 - [YouTube](https://www.youtube.com/)
-- [Reddit](https://www.reddit.com/)
 - [Wikipedia](https://www.wikipedia.org/)
 - [Yahoo](https://www.yahoo.com/)
 

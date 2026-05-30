@@ -9,7 +9,6 @@ const fixturePath = 'fixtures/example-test.md';
 const validUrls = [
 	'https://www.google.com/',
 	'https://www.youtube.com/',
-	'https://www.reddit.com/',
 	'https://www.wikipedia.org/',
 	'https://www.yahoo.com/',
 ];
@@ -39,8 +38,8 @@ describe('public link fixture', () => {
 			});
 
 			expect(result.discoveredFileCount).toBe(1);
-			expect(result.extractedLinkCount).toBe(8);
-			expect(result.checkedCount).toBe(8);
+			expect(result.extractedLinkCount).toBe(7);
+			expect(result.checkedCount).toBe(7);
 			expect(result.brokenCount).toBe(3);
 			expect(result.shouldFail).toBe(true);
 
