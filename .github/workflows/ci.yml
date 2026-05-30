@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Lint GitHub Actions workflows
         uses: reviewdog/action-actionlint@v1
@@ -23,21 +23,20 @@ jobs:
           fail_level: error
           level: error
           reporter: local
-          shellcheck: false
 
   verify:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10.28.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           cache: pnpm
           node-version: 24
@@ -50,3 +49,6 @@ jobs:
 
       - name: Run smoke test
         run: pnpm run smoke
+
+      - name: Ensure dist is up-to-date
+        run: git diff --exit-code dist
