@@ -1,5 +1,5 @@
 import { a as __toESM, i as __require, r as __exportAll, t as __commonJSMin } from "./chunk-6013aawC.mjs";
-import { a as formatCheck, d as parseIntegerInput, i as buildMarkdownSummary, l as getLogger, t as runLinkCheck, u as parseBooleanInput } from "./run-link-check-IUrTq83E.mjs";
+import { a as formatCheck, d as parseIntegerInput, i as buildMarkdownSummary, l as getLogger, t as runLinkCheck, u as parseBooleanInput } from "./run-link-check-DedIeAx8.mjs";
 import * as os$1 from "os";
 import os, { EOL } from "os";
 import * as crypto from "crypto";

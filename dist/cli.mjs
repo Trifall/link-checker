@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { a as __toESM, i as __require, t as __commonJSMin } from "./chunk-6013aawC.mjs";
-import { d as parseIntegerInput, f as parseOutputDetailInput, i as buildMarkdownSummary, l as getLogger, p as _enum, t as runLinkCheck } from "./run-link-check-IUrTq83E.mjs";
+import { d as parseIntegerInput, f as parseOutputDetailInput, i as buildMarkdownSummary, l as getLogger, p as _enum, t as runLinkCheck } from "./run-link-check-DedIeAx8.mjs";
 import { pathToFileURL } from "node:url";
 //#region node_modules/.pnpm/commander@14.0.3/node_modules/commander/lib/error.js
 var require_error = /* @__PURE__ */ __commonJSMin(((exports) => {

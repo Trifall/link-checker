@@ -9836,7 +9836,7 @@ function sanitizeUrl(url) {
 	try {
 		const parsed = new URL(url);
 		let modified = false;
-		for (const key of [...parsed.searchParams.keys()]) if (REDACTED_QUERY_PARAMS.has(key.toLowerCase())) {
+		for (const key of parsed.searchParams.keys()) if (REDACTED_QUERY_PARAMS.has(key.toLowerCase())) {
 			parsed.searchParams.set(key, "[Redacted]");
 			modified = true;
 		}
@@ -36543,4 +36543,4 @@ async function runLinkCheck(input = {}) {
 //#endregion
 export { formatCheck as a, createLogger as c, parseIntegerInput as d, parseOutputDetailInput as f, buildMarkdownSummary as i, getLogger as l, normalizeConfig as n, LOGGER_REDACT_PATHS as o, _enum as p, resolveConfig as r, configureLogger as s, runLinkCheck as t, parseBooleanInput as u };
 
-//# sourceMappingURL=run-link-check-IUrTq83E.mjs.map
+//# sourceMappingURL=run-link-check-DedIeAx8.mjs.map
