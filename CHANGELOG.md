@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/Trifall/link-checker/compare/link-checker-v0.1.1...link-checker-v0.1.2) (2026-05-30)
+
+
+### Bug Fixes
+
+* use github-pr-check reporter for actionlint to avoid empty diff errors ([cef8ac8](https://github.com/Trifall/link-checker/commit/cef8ac84bbe277d9038d6572fcfc793e13b87307))
+
 ## [0.1.1](https://github.com/Trifall/link-checker/compare/link-checker-v0.1.0...link-checker-v0.1.1) (2026-05-30)
 
 
