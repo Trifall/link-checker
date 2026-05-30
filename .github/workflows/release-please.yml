@@ -61,7 +61,6 @@ jobs:
             --base main \
             --head "$SYNC_BRANCH" \
             --title "chore: sync develop to main (v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }})" \
-            --body "Automated sync from develop to main following release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}.
-        After merging this PR, run the **Update Major Tag** workflow to repoint the \`v${{ steps.release.outputs.major }}\` tag."
+            --body "Automated sync from develop to main following release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}. After merging this PR, run the Update Major Tag workflow to repoint the v${{ steps.release.outputs.major }} tag."
         env:
           GH_TOKEN: ${{ github.token }}
