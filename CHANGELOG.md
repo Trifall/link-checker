@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/Trifall/link-checker/compare/link-checker-v0.1.3...link-checker-v0.1.4) (2026-05-30)
+
+
+### Bug Fixes
+
+* flatten multi-line PR body to fix YAML indentation error ([f7ba813](https://github.com/Trifall/link-checker/commit/f7ba81330cc828fb6244333538c267d1aa401c70))
+* simplify release workflow, add manual major-tag update workflow ([5b6a147](https://github.com/Trifall/link-checker/commit/5b6a1478682fdd1669f3d7dcc21c123cb64cf1dd))
+
 ## [0.1.3](https://github.com/Trifall/link-checker/compare/link-checker-v0.1.2...link-checker-v0.1.3) (2026-05-30)
 
 
