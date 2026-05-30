@@ -3,7 +3,7 @@ name: Release Please
 on:
   push:
     branches:
-      - main
+      - develop
   workflow_dispatch:
 
 permissions:
@@ -14,6 +14,10 @@ permissions:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      major: ${{ steps.release.outputs.major }}
+      sha: ${{ steps.release.outputs.sha }}
     steps:
       - name: Run release-please
         id: release
@@ -29,12 +33,73 @@ jobs:
           fetch-depth: 0
           ref: ${{ steps.release.outputs.sha }}
 
-      - name: Update major version tag
+      - name: Setup git
         if: ${{ steps.release.outputs.release_created }}
         run: |
-          MAJOR_TAG="v${{ steps.release.outputs.major }}"
-          RELEASE_SHA="${{ steps.release.outputs.sha }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch --tags --force
-          git tag -f "$MAJOR_TAG" "$RELEASE_SHA"
-          git push origin "refs/tags/$MAJOR_TAG" --force
+      - name: Create clean sync PR to main
+        if: ${{ steps.release.outputs.release_created }}
+        id: sync-pr
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          SYNC_BRANCH="sync-to-main-${TIMESTAMP}"
+          echo "branch=${SYNC_BRANCH}" >> "$GITHUB_OUTPUT"
+
+          git checkout -b "$SYNC_BRANCH"
+
+          # Remove workflow files (main must not have these)
+          git rm -q .github/workflows/ci.yml .github/workflows/release-please.yml 2>/dev/null || true
+
+          # Restore dist/ from main
+          git checkout origin/main -- dist/
+
+          git commit -m "chore: sync develop to main" --allow-empty
+
+          git push origin "$SYNC_BRANCH"
+
+          PR_URL=$(gh pr create \
+            --base main \
+            --head "$SYNC_BRANCH" \
+            --title "chore: sync develop to main (v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }})" \
+            --body "Automated sync from develop to main following release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}." \
+            --label "automated")
+          echo "pr-url=${PR_URL}" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Wait for sync PR to merge
+        if: ${{ steps.release.outputs.release_created }}
+        timeout-minutes: 15
+        run: |
+          PR_URL="${{ steps.sync-pr.outputs.pr-url }}"
+          echo "Waiting for sync PR to merge: ${PR_URL}"
+          while true; do
+            STATE=$(gh pr view "$PR_URL" --json state -q '.state' 2>/dev/null || echo "UNKNOWN")
+            echo "PR state: ${STATE}"
+            case "$STATE" in
+              MERGED)
+                echo "PR merged. Proceeding to update major tag."
+                break
+                ;;
+              CLOSED)
+                echo "PR closed without merging. Skipping tag update."
+                exit 0
+                ;;
+            esac
+            sleep 30
+          done
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Update major version tag on main
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          git fetch origin main
+          MAIN_SHA=$(git rev-parse origin/main)
+          MAJOR_TAG="v${{ steps.release.outputs.major }}"
+
+          echo "Updating major tag ${MAJOR_TAG} to point to main (${MAIN_SHA})"
+          git tag -f "$MAJOR_TAG" "$MAIN_SHA"
+          git push origin "refs/tags/${MAJOR_TAG}" --force
