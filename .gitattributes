@@ -1,1 +1,3 @@
 * text=auto eol=lf
+.github/workflows/ci.yml merge=keep-deleted
+.github/workflows/release-please.yml merge=keep-deleted
