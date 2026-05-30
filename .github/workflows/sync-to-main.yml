@@ -43,7 +43,6 @@ jobs:
             --base main \
             --head "$SYNC_BRANCH" \
             --title "chore: sync develop to main" \
-            --body "Manual sync from develop to main." \
-            --label "automated"
+            --body "Manual sync from develop to main."
         env:
           GH_TOKEN: ${{ github.token }}
