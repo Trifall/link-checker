@@ -1,6 +1,6 @@
 {
 	"name": "link-checker",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"private": false,
 	"description": "GitHub Action and CLI for checking markdown links.",
 	"bin": {
