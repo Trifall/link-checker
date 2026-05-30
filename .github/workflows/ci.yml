@@ -22,7 +22,7 @@ jobs:
         with:
           fail_level: error
           level: error
-          reporter: local
+          reporter: github-pr-check
 
   verify:
     runs-on: ubuntu-latest
