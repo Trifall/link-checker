@@ -1,0 +1,30 @@
+name: Update Major Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      major-version:
+        description: Major version number (e.g. 1 for v1)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Update major version tag
+        run: |
+          MAJOR_TAG="v${{ inputs.major-version }}"
+          MAIN_SHA=$(git rev-parse origin/main)
+
+          echo "Updating ${MAJOR_TAG} to point to main (${MAIN_SHA})"
+          git tag -f "$MAJOR_TAG" "$MAIN_SHA"
+          git push origin "refs/tags/${MAJOR_TAG}" --force

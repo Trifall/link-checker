@@ -1,0 +1,48 @@
+name: Sync to Main
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: develop
+
+      - name: Setup git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create clean PR to main
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          SYNC_BRANCH="sync-to-main-${TIMESTAMP}"
+
+          git checkout -b "$SYNC_BRANCH"
+
+          # Remove workflow files (main must not have these)
+          git rm -q .github/workflows/ci.yml .github/workflows/release-please.yml .github/workflows/sync-to-main.yml 2>/dev/null || true
+
+          # Restore dist/ from main
+          git checkout origin/main -- dist/
+
+          git commit -m "chore: sync develop to main" --allow-empty
+
+          git push origin "$SYNC_BRANCH"
+
+          gh pr create \
+            --base main \
+            --head "$SYNC_BRANCH" \
+            --title "chore: sync develop to main" \
+            --body "Manual sync from develop to main."
+        env:
+          GH_TOKEN: ${{ github.token }}

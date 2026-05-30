@@ -35,11 +35,20 @@ It is built to:
 
 ```bash
 pnpm install
+pnpm run build
+pnpm run test
 pnpm run test:unit
 pnpm run test:e2e
+pnpm run lint
+pnpm run lint:fix
+pnpm run format
+pnpm run format:check
+pnpm run typecheck
 pnpm run check
 pnpm run smoke
 ```
+
+`pnpm run check` runs lint, typecheck, tests, and build in sequence.
 
 ## CLI Usage
 
@@ -180,24 +189,40 @@ jobs:
 
 ## Main Inputs
 
-The action and CLI share the same core options.
+The action and CLI share the same core options. In the CLI, list options like `--allow-domain` use singular flag names (e.g. `--allow-domain foo.com --allow-domain bar.com`), while action inputs use plural names with multiline values.
 
-- `paths`: Markdown files or glob patterns to scan
-- `exclude`: files or glob patterns to skip
-- `ignore-domains`: domains to skip entirely
-- `ignore-url-patterns`: URL patterns to skip
-- `allow-domains`: domains whose failures may be downgraded to warnings
-- `deny-domains`: domains whose warning-class responses should be treated as errors
-- `allow-status-codes`: status codes to treat as successful
-- `deny-status-codes`: status codes to force as errors
-- `timeout-seconds`: per-request timeout
-- `concurrency`: maximum number of concurrent checks
-- `retries`: retry attempts for retryable failures
-- `retry-base-delay-ms`: base retry delay
-- `retry-max-delay-ms`: maximum retry delay
-- `fail-on`: failure mode, one of `error`, `mixed`, or `warning`
-- `output-json`: optional path for a JSON report
-- `verbose`: enable verbose logging
+| Input | CLI flag | Action input | Default | Description |
+| --- | --- | --- | --- | --- |
+| `paths` | `--paths` | `paths` | `**/*.md`, `**/*.mdx` | Markdown files or glob patterns to scan |
+| `exclude` | `--exclude` | `exclude` | `.git/**`, `.next/**`, `.svelte-kit/**`, `build/**`, `coverage/**`, `dist/**`, `node_modules/**` | Files or glob patterns to skip |
+| `ignore-domains` | `--ignore-domain` | `ignore-domains` | | Domains to skip entirely |
+| `ignore-url-patterns` | `--ignore-url-pattern` | `ignore-url-patterns` | | URL patterns to skip (prefix with `regex:` for regex) |
+| `allow-domains` | `--allow-domain` | `allow-domains` | | Domains whose failures may be downgraded to warnings |
+| `deny-domains` | `--deny-domain` | `deny-domains` | | Domains whose warning-class responses should be treated as errors |
+| `allow-status-codes` | `--allow-status-code` | `allow-status-codes` | | Status codes to treat as successful |
+| `deny-status-codes` | `--deny-status-code` | `deny-status-codes` | | Status codes to force as errors |
+| `timeout-seconds` | `--timeout-seconds` | `timeout-seconds` | `15` | Per-request timeout in seconds |
+| `concurrency` | `--concurrency` | `concurrency` | `20` | Maximum number of concurrent checks |
+| `retries` | `--retries` | `retries` | `2` | Retry attempts for retryable failures |
+| `retry-base-delay-ms` | `--retry-base-delay-ms` | `retry-base-delay-ms` | `250` | Base retry delay in milliseconds |
+| `retry-max-delay-ms` | `--retry-max-delay-ms` | `retry-max-delay-ms` | `2000` | Maximum retry delay in milliseconds |
+| `fail-on` | `--fail-on` | `fail-on` | `mixed` | Failure mode: `error`, `mixed`, or `warning` |
+| `output-json` | `--output-json` | `output-json` | | Optional path for a JSON report file |
+| `verbose` | `--verbose` | `verbose` | `false` | Enable verbose logging |
+| `respect-gitignore` | `--no-respect-gitignore` | `respect-gitignore` | `true` | Whether to respect `.gitignore` rules during file discovery |
+| `user-agent` | `--user-agent` | `user-agent` | `trifall/link-checker` | Override the default user agent |
+| `config-file` | `--config` | `config-file` | (auto-detected) | Path to a JSON or JSONC config file |
+
+CLI-only options (no action equivalent):
+
+| CLI flag | Default | Description |
+| --- | --- | --- |
+| `--format` | `text` | Output format: `text`, `json`, or `markdown` |
+| `--detail` | `simple` | Issue detail level: `simple` or `detailed` |
+| `--detailed` | | Alias for `--detail detailed` |
+| `--issues-only` | `false` | Only include errors and warnings in rendered output |
+
+The `outputDetail` config file key controls issue detail level for config-driven runs. It is not exposed as a direct action input; set it in a config file when using the action.
 
 ## HTTP Responses and False Positives
 
@@ -214,20 +239,6 @@ pnpm run dev:cli scan --paths README.md --allow-status-code 403 --allow-status-c
 ```
 
 Use `--deny-domain` or `--deny-status-code` for links where those same responses should fail the run.
-
-Config files also support `outputDetail`, one of `simple` or `detailed`, for CLI text issue output.
-
-The CLI also supports `--format` with these values:
-
-- `text`: default human-readable log output
-- `json`: machine-readable result payload on stdout
-- `markdown`: Markdown summary on stdout
-
-The CLI also supports text issue detail controls:
-
-- `--detail simple`: default concise issue output
-- `--detail detailed`: include the structured `check` payload for each issue
-- `--detailed`: alias for `--detail detailed`
 
 ## Reporting
 
