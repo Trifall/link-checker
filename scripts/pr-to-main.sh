@@ -28,7 +28,11 @@ git checkout -b "$TEMP_BRANCH"
 
 echo "Removing workflow files for main-compatible PR..."
 git rm -q .github/workflows/ci.yml .github/workflows/release-please.yml 2>/dev/null || true
-git commit -m "chore: remove workflow files for main compatibility" --allow-empty
+
+echo "Restoring dist/ from main..."
+git checkout main -- dist/
+
+git commit -m "chore: align with main (remove workflows, restore dist)" --allow-empty
 
 echo "Pushing $TEMP_BRANCH..."
 git push origin "$TEMP_BRANCH"
